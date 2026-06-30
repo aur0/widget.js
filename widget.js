@@ -1,4 +1,4 @@
-(function(){var e=`https://bun.warrenwebsites.co.uk/api/cloudflare-region`,t=`[chatbot-widget]`,n=document.currentScript,r=null,i=null,a=[];function o(e){return e instanceof Error?{name:e.name,message:e.message,stack:e.stack}:{name:typeof e,message:String(e)}}function s(e,t){let n=document.createElement(e);return t&&(n.className=t),n}function c(){let e=s(`style`);e.textContent=`
+(function(){var e=`https://bun.warrenwebsites.co.uk/api/cloudflare-region`,t=`[chatbot-widget]`,n=`myapp_chat_id`,r=document.currentScript,i=null,a=null,o=[];function s(){let e=localStorage.getItem(n);if(e)return e;let t=crypto.randomUUID();return localStorage.setItem(n,t),t}function c(){localStorage.removeItem(n);let e=crypto.randomUUID();return localStorage.setItem(n,e),e}function l(e){return e instanceof Error?{name:e.name,message:e.message,stack:e.stack}:{name:typeof e,message:String(e)}}function u(e,t){let n=document.createElement(e);return t&&(n.className=t),n}function d(){let e=u(`style`);e.textContent=`
     .cbw-launcher {
       position: fixed;
       right: 20px;
@@ -40,11 +40,22 @@
     .cbw-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
       height: 48px;
       padding: 0 14px;
       border-bottom: 1px solid #e5e7eb;
       font-weight: 650;
+    }
+
+    .cbw-header > span {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cbw-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .cbw-close {
@@ -53,6 +64,21 @@
       color: #4b5563;
       cursor: pointer;
       font: 20px/1 system-ui, sans-serif;
+    }
+
+    .cbw-new-chat {
+      border: 1px solid #d1d5db;
+      border-radius: 999px;
+      background: white;
+      color: #374151;
+      cursor: pointer;
+      font: 600 12px/1 system-ui, sans-serif;
+      padding: 7px 10px;
+      white-space: nowrap;
+    }
+
+    .cbw-new-chat:hover {
+      background: #f9fafb;
     }
 
     .cbw-messages {
@@ -123,4 +149,4 @@
       cursor: pointer;
       font: 700 16px/1 system-ui, sans-serif;
     }
-  `,document.head.appendChild(e)}function l(e,n){if(n===void 0){console.debug(t,e);return}console.debug(t,e,n)}function u(e,n){if(n===void 0){console.log(t,e);return}console.log(t,e,n)}function d(e){return`${e.replace(/\/$/,``)}/api/chatbot`}async function f(){return i||(r||=(async()=>{u(`Resolving API base`,{regionLookupUrl:e,scriptSrc:n?.src||null});let r=await fetch(e,{method:`GET`,headers:{Accept:`application/json`}}),a=await r.text();if(console.log(t,`Region lookup raw response`,a),u(`Region lookup response received`,{ok:r.ok,status:r.status,statusText:r.statusText,rawResponse:a}),!r.ok)throw Error(`Region lookup failed (${r.status} ${r.statusText}).`);let o;try{o=JSON.parse(a)}catch{throw Error(`Invalid region lookup response (${r.status} ${r.statusText}).`)}let s=o[`data-api-base`];if(typeof s!=`string`||!s.trim())throw Error(`Region lookup response did not include data-api-base.`);return i=s,u(`API base resolved`,{apiBase:i}),i})().catch(e=>{throw r=null,e}),r)}u(`Widget loaded`,{regionLookupUrl:e,scriptSrc:n?.src||null,pageUrl:window.location.href,pageOrigin:window.location.origin,userAgent:navigator.userAgent});function p(){c();let n=s(`button`,`cbw-launcher`);n.type=`button`,n.textContent=`?`,n.setAttribute(`aria-label`,`Open chat`);let r=s(`section`,`cbw-panel`),p=s(`div`,`cbw-header`),m=s(`span`),h=s(`button`,`cbw-close`),g=s(`div`,`cbw-messages`),_=s(`div`,`cbw-error`),v=s(`form`,`cbw-form`),y=s(`textarea`,`cbw-input`),b=s(`button`,`cbw-send`);m.textContent=`Chat`,h.type=`button`,h.textContent=`x`,h.setAttribute(`aria-label`,`Close chat`),y.rows=1,y.placeholder=`Message...`,b.type=`submit`,b.textContent=`>`,p.append(m,h),v.append(y,b),r.append(p,g,_,v),document.body.append(r,n);function x(e){_.textContent=e??``,_.dataset.visible=e?`true`:`false`}function S(e){let t=s(`div`,`cbw-message cbw-message-${e.role}`);t.textContent=e.content,g.appendChild(t),g.scrollTop=g.scrollHeight}n.addEventListener(`click`,()=>{r.dataset.open=r.dataset.open===`true`?`false`:`true`,f(),r.dataset.open===`true`&&y.focus()}),h.addEventListener(`click`,()=>{r.dataset.open=`false`}),v.addEventListener(`submit`,async n=>{n.preventDefault();let r=y.value.trim();if(!r)return;y.value=``,y.disabled=!0,b.disabled=!0,x(null);let s={role:`user`,content:r};a.push(s),S(s);let c={messages:a};console.groupCollapsed(`${t} send`),u(`Send clicked`,{apiBase:i,apiBaseResolved:!!i,regionLookupUrl:e,pageOrigin:window.location.origin,online:navigator.onLine,messageCount:a.length,payload:c,payloadJson:JSON.stringify(c)});try{let e=await f(),t=d(e);l(`Submitting chat request`,{apiUrl:t,apiBase:e,messageCount:a.length,messages:a}),u(`Fetch starting`,{method:`POST`,url:t,headers:{"Content-Type":`application/json`}});let n=await fetch(t,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify(c)}),r=await n.text();u(`Fetch response received`,{ok:n.ok,status:n.status,statusText:n.statusText,contentType:n.headers.get(`content-type`),accessControlAllowOrigin:n.headers.get(`access-control-allow-origin`),rawResponse:r}),l(`Raw response received`,{ok:n.ok,status:n.status,statusText:n.statusText,rawResponse:r});let i;try{i=JSON.parse(r)}catch{throw Error(`Invalid JSON response (${n.status} ${n.statusText}).`)}if(!n.ok||`error`in i){a.pop();let e=`error`in i?i.error:`Chat request failed.`;throw l(`Chat request failed`,{status:n.status,statusText:n.statusText,errorMessage:e}),Error(e)}let o={role:`assistant`,content:i.text};a.push(o),S(o),u(`Assistant message appended`,{model:i.model,textLength:i.text.length,messageCount:a.length})}catch(e){let n=o(e);console.error(t,`Request error`,e,{apiUrl:i?d(i):null,apiBase:i,messageCount:a.length,pageOrigin:window.location.origin,online:navigator.onLine,errorDetails:n}),u(`Fetch failed before a readable response`,{apiUrl:i?d(i):null,likelyCauses:[`CORS/preflight rejected`,`network/DNS/TLS failure`,`Shopify sandbox/content policy blocked the request`,`ad blocker/privacy tool blocked the request`],errorDetails:n}),x(e instanceof Error?e.message:`Chat request failed.`)}finally{y.disabled=!1,b.disabled=!1,y.focus(),console.groupEnd()}})}document.readyState===`loading`?document.addEventListener(`DOMContentLoaded`,p,{once:!0}):p()})();
+  `,document.head.appendChild(e)}function f(e,n){if(n===void 0){console.debug(t,e);return}console.debug(t,e,n)}function p(e,n){if(n===void 0){console.log(t,e);return}console.log(t,e,n)}function m(e){return`${e.replace(/\/$/,``)}/api/chatbot`}async function h(){return a||(i||=(async()=>{p(`Resolving API base`,{regionLookupUrl:e,scriptSrc:r?.src||null});let n=await fetch(e,{method:`GET`,headers:{Accept:`application/json`}}),i=await n.text();if(console.log(t,`Region lookup raw response`,i),p(`Region lookup response received`,{ok:n.ok,status:n.status,statusText:n.statusText,rawResponse:i}),!n.ok)throw Error(`Region lookup failed (${n.status} ${n.statusText}).`);let o;try{o=JSON.parse(i)}catch{throw Error(`Invalid region lookup response (${n.status} ${n.statusText}).`)}let s=o[`data-api-base`];if(typeof s!=`string`||!s.trim())throw Error(`Region lookup response did not include data-api-base.`);return a=s,p(`API base resolved`,{apiBase:a}),a})().catch(e=>{throw i=null,e}),i)}p(`Widget loaded`,{regionLookupUrl:e,scriptSrc:r?.src||null,pageUrl:window.location.href,pageOrigin:window.location.origin,userAgent:navigator.userAgent});function g(){d();let n=u(`button`,`cbw-launcher`);n.type=`button`,n.textContent=`?`,n.setAttribute(`aria-label`,`Open chat`);let r=u(`section`,`cbw-panel`),i=u(`div`,`cbw-header`),g=u(`div`,`cbw-header-actions`),_=u(`span`),v=u(`button`,`cbw-close`),y=u(`button`,`cbw-new-chat`),b=u(`div`,`cbw-messages`),x=u(`div`,`cbw-error`),S=u(`form`,`cbw-form`),C=u(`textarea`,`cbw-input`),w=u(`button`,`cbw-send`);_.textContent=`Chat`,v.type=`button`,v.textContent=`x`,v.setAttribute(`aria-label`,`Close chat`),y.type=`button`,y.textContent=`New Chat`,y.setAttribute(`aria-label`,`Start a new chat`),C.rows=1,C.placeholder=`Message...`,w.type=`submit`,w.textContent=`>`,g.append(y,v),i.append(_,g),S.append(C,w),r.append(i,b,x,S),document.body.append(r,n);function T(e){x.textContent=e??``,x.dataset.visible=e?`true`:`false`}function E(e){let t=u(`div`,`cbw-message cbw-message-${e.role}`);t.textContent=e.content,b.appendChild(t),b.scrollTop=b.scrollHeight}function D(){o.length=0,b.replaceChildren(),T(null),C.value=``,c(),C.focus()}n.addEventListener(`click`,()=>{r.dataset.open=r.dataset.open===`true`?`false`:`true`,h(),r.dataset.open===`true`&&C.focus()}),v.addEventListener(`click`,()=>{r.dataset.open=`false`}),y.addEventListener(`click`,()=>{D()}),S.addEventListener(`submit`,async n=>{n.preventDefault();let r=C.value.trim();if(!r)return;C.value=``,C.disabled=!0,w.disabled=!0,T(null);let i={role:`user`,content:r};o.push(i),E(i);let c=s(),u={chatId:c,messages:o};console.groupCollapsed(`${t} send`),p(`Send clicked`,{apiBase:a,apiBaseResolved:!!a,regionLookupUrl:e,pageOrigin:window.location.origin,online:navigator.onLine,chatId:c,messageCount:o.length,payload:u,payloadJson:JSON.stringify(u)});try{let e=await h(),t=m(e);f(`Submitting chat request`,{apiUrl:t,apiBase:e,chatId:c,messageCount:o.length,messages:o}),p(`Fetch starting`,{method:`POST`,url:t,chatId:c,headers:{"Content-Type":`application/json`}});let n=await fetch(t,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify(u)}),r=await n.text();p(`Fetch response received`,{ok:n.ok,status:n.status,statusText:n.statusText,contentType:n.headers.get(`content-type`),accessControlAllowOrigin:n.headers.get(`access-control-allow-origin`),rawResponse:r}),f(`Raw response received`,{ok:n.ok,status:n.status,statusText:n.statusText,rawResponse:r});let i;try{i=JSON.parse(r)}catch{throw Error(`Invalid JSON response (${n.status} ${n.statusText}).`)}if(!n.ok||`error`in i){o.pop();let e=`error`in i?i.error:`Chat request failed.`;throw f(`Chat request failed`,{status:n.status,statusText:n.statusText,errorMessage:e}),Error(e)}let a={role:`assistant`,content:i.text};o.push(a),E(a),p(`Assistant message appended`,{model:i.model,textLength:i.text.length,messageCount:o.length})}catch(e){let n=l(e);console.error(t,`Request error`,e,{apiUrl:a?m(a):null,apiBase:a,chatId:c,messageCount:o.length,pageOrigin:window.location.origin,online:navigator.onLine,errorDetails:n}),p(`Fetch failed before a readable response`,{apiUrl:a?m(a):null,likelyCauses:[`CORS/preflight rejected`,`network/DNS/TLS failure`,`Shopify sandbox/content policy blocked the request`,`ad blocker/privacy tool blocked the request`],errorDetails:n}),T(e instanceof Error?e.message:`Chat request failed.`)}finally{C.disabled=!1,w.disabled=!1,C.focus(),console.groupEnd()}})}document.readyState===`loading`?document.addEventListener(`DOMContentLoaded`,g,{once:!0}):g()})();
